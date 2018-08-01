@@ -1,0 +1,35 @@
+{
+    "tasks":[
+        {
+            "input_file":"assets/eeuu_countries.dat",
+            "number_per_proj":10,
+            "projections":["eqdc","moll","merc"],
+            "color_maps":["jet","gray","viridis","cubehelix","RdBu","Blues","binary"],
+            "quantized":{
+                "nvalues":10
+            },
+            "basemap":
+            {
+                "llcrnrlat":{
+                    "min":20,
+                    "max":25
+                },
+                "llcrnrlon":
+                {
+                    "min":-130,
+                    "max":-125
+                },
+                "urcrnrlat":{
+                    "min":45,
+                    "max":50
+                },
+                "urcrnrlon":{
+                    "min":-60,
+                    "max":-55
+                },
+                "lat_ts":20,
+                "resolution":"i"
+            }
+        }
+    ]
+}
