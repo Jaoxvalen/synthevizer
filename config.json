@@ -4,12 +4,26 @@
             "input_file":"assets/eeuu_countries.dat",
             "number_per_proj":10,
             "projections":["eqdc","moll","merc"],
-            "color_maps":["jet","gray","viridis","cubehelix","RdBu","Blues","binary"],
-            "quantized":{
-                "nvalues":10
+            "color_maps":{
+                "palette":["jet","gray","viridis","cubehelix","RdBu","Blues","binary"],
+                "positions":["left","rigth","top","bottom"],
+                "quantized":{
+                    "nvalues":[10,20],
+                    "isrange":true
+                },
+                "continuous":true
+            },
+            "background":{
+                "ocean_color":["white", "#528db7","#5296b7","#52a0b7","#52a9b7","#52b2b7"],
+                "land_colors":"random",
+                "background":["bluemarble","shadedrelief","etopo"]
             },
             "basemap":
             {
+                "lat_0":"auto",
+                "lon_0":"auto",
+                "n_tick_lat":6,
+                "n_tick_lon":8,
                 "llcrnrlat":{
                     "min":20,
                     "max":25
