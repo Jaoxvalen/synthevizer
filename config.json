@@ -2,11 +2,12 @@
     "tasks":[
         {
             "input_file":"assets/eeuu_countries.dat",
+            "output_folder":"data_gen/",
             "number_per_proj":10,
             "projections":["eqdc","moll","merc"],
             "color_maps":{
                 "palette":["jet","gray","viridis","cubehelix","RdBu","Blues","binary"],
-                "positions":["left","rigth","top","bottom"],
+                "positions":["left","right","top","bottom"],
                 "quantized":{
                     "nvalues":[10,20],
                     "isrange":true

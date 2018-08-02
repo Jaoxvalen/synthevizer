@@ -5,17 +5,28 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 import numpy as np
 
 
+class Pbbox(object):
+
+    def __init__(self, x0, y0, x1, y1, text, typeb):
+        self.x0 = x0
+        self.y0 = y0
+        self.x1 = x1
+        self.y1 = y1
+        self.text = text
+        self.typeb = typeb
+
+
 class PMap(object):
 
-    def __init__(self, 
-                _data, _projection, 
-                _color_map, _llcrnrlat,
+    def __init__(self,
+                 _data, _projection,
+                 _color_map, _llcrnrlat,
                  _llcrnrlon, _urcrnrlat, _urcrnrlon, _lat_ts, _resolution, _lon_0=0, _lat_0=0,  _n_tick_lat=6, _n_tick_lon=8,
                  _n_quantized=0, _draw_coast_lines=True, _draw_countries=False, _draw_states=True,
                  _background='none',
                  _ocean_color='white',
                  _land_color='white',
-                 _color_map_pos='right', _color_map_cax=False, _color_map_shrink=0.5, _color_map_orientation='vertical', 
+                 _color_map_pos='right', _color_map_cax=False, _color_map_shrink=0.5, _color_map_orientation='vertical',
                  _color_map_thickness='5%', _color_map_label='value'):
 
         self.projection = _projection
@@ -49,7 +60,7 @@ class PMap(object):
         else:
             self.color_map = plt.cm.get_cmap(_color_map)
 
-    def draw(self):
+    def create(self):
 
         mpl.rcParams.update({'font.size': 8})
 
@@ -73,6 +84,16 @@ class PMap(object):
         if self.draw_states:
             self.basemap.drawstates()
 
+        if self.background == 'bluemarble':
+            self.basemap.bluemarble()
+        elif self.background == 'shadedrelief':
+            self.basemap.shadedrelief()
+        elif self.background == 'etopo':
+            self.basemap.etopo()
+        else:
+            self.basemap.drawlsmask(
+                land_color=self.land_color, ocean_color=self.ocean_color, lakes=True)
+
         parallels = np.arange(-90., 91., step_tick_lat)
         meridians = np.arange(-180., 181., step_tick_lon)
 
@@ -88,10 +109,16 @@ class PMap(object):
 
         if self.color_map_cax:
 
-            if self.color_map_pos == 'bottom' or self.color_map_pos == 'top':
+            if self.color_map_pos == 'top':
+                orientation = 'horizontal'
+                pad = '30%'
+            elif self.color_map_pos == 'bottom':
                 orientation = 'horizontal'
                 pad = '10%'
-            else:
+            elif self.color_map_pos == 'right':
+                orientation = 'vertical'
+                pad = '15%'
+            elif self.color_map_pos == 'left':
                 orientation = 'vertical'
                 pad = '30%'
 
@@ -105,15 +132,96 @@ class PMap(object):
             cbar = plt.colorbar(sc, shrink=self.color_map_shrink,
                                 orientation=self.color_map_orientation, pad=0.1)
 
+
         cbar.set_label(self.color_map_label)
 
-        if self.background =='bluemarble':
-            self.basemap.bluemarble()
-        elif self.background =='shadedrelief':
-            self.basemap.shadedrelief()
-        elif self.background =='etopo':
-            self.basemap.etopo()
-        else:
-            self.basemap.drawlsmask(land_color=self.land_color,ocean_color=self.ocean_color,lakes=True)
+        self.cbar = cbar
+        
 
-        plt.show()
+    #save the figure and bboxes
+    def save_fig_bboxes(self, pathfile, name_fig):
+
+        plt.gcf().canvas.draw()
+
+        fig = plt.gcf()
+        size = fig.get_size_inches()*fig.dpi
+
+
+        lsbbox = []
+        lspara = list(self.fig_parallels.values())
+        lsmeri = list(self.fig_meridians.values())
+
+        for l in lspara:
+            if len(l[1]) > 0:
+                o = l[1][0].get_window_extent()
+                obbox = Pbbox(o.x0, size[1]-o.y0, o.x1, size[1]-o.y1, l[1][0].get_text(), 'lat_label')
+                lsbbox.append(obbox)
+
+        for l in lsmeri:
+            if len(l[1]) > 0:
+                o = l[1][0].get_window_extent()
+                obbox = Pbbox(o.x0, size[1]-o.y0, o.x1, size[1]-o.y1, l[1][0].get_text(), 'lon_label')
+                lsbbox.append(obbox)
+
+        for l in self.cbar.ax.get_yticklabels():
+            o = l.get_window_extent()
+            obbox = Pbbox(o.x0, size[1]-o.y0, o.x1, size[1]-o.y1, l.get_text(), 'legend_tick_label')
+            lsbbox.append(obbox)
+        
+        for l in self.cbar.ax.get_xticklabels():
+            o = l.get_window_extent()
+            obbox = Pbbox(o.x0, size[1]-o.y0, o.x1, size[1]-o.y1, l.get_text(), 'legend_tick_label')
+            lsbbox.append(obbox)
+
+        #color bar legend
+        o = self.cbar.ax.get_window_extent()
+        obbox = Pbbox(o.x0, size[1]-o.y0, o.x1, size[1]-o.y1, '', 'legend')
+        lsbbox.append(obbox)
+
+        llabel = self.cbar.ax.yaxis.get_label()
+
+        if len(llabel.get_text())>0:
+            o = llabel.get_window_extent()
+            obbox = Pbbox(o.x0, size[1]-o.y0, o.x1, size[1]-o.y1, llabel.get_text(), 'legend_label')
+            lsbbox.append(obbox)
+ 
+        llabel = self.cbar.ax.xaxis.get_label()
+
+        if len(llabel.get_text())>0:
+            o = llabel.get_window_extent()
+            obbox = Pbbox(o.x0, size[1]-o.y0, o.x1, size[1]-o.y1, llabel.get_text(), 'legend_label')
+            lsbbox.append(obbox)
+
+        
+        path = pathfile+name_fig
+
+        plt.savefig(path+'.png')
+
+        fout = open(path+'.json','w')
+
+        i = 0
+        fout.writelines('{"bboxes":[')
+        for bbox in  lsbbox:
+            if i == len(lsbbox)-1:
+                fout.writelines('{"type":"'+bbox.typeb+'","text":"'+bbox.text+'","x0":'+str(bbox.x0)+',"y0":'+str(bbox.y0)+',"x1":'+str(bbox.x1)+',"y1":'+str(bbox.y1) +'}\n')
+            else:
+                fout.writelines('{"type":"'+bbox.typeb+'","text":"'+bbox.text+'","x0":'+str(bbox.x0)+',"y0":'+str(bbox.y0)+',"x1":'+str(bbox.x1)+',"y1":'+str(bbox.y1) +'},\n')
+            i+=1
+
+        fout.writelines(']}')
+        fout.close()
+
+        '''
+        import cv2
+        
+        img = cv2.imread('myfig.png',cv2.IMREAD_COLOR)
+
+        for bbox in lsbbox:
+            print(bbox.x0, ",", bbox.y0, bbox.x1, ",", bbox.y1, "  ", bbox.typeb, "  ", bbox.text)
+            cv2.rectangle(img, (int(bbox.x0), int(bbox.y0) ), ( int(bbox.x1) , int(bbox.y1) ), (0,0,255), 1)
+        
+        cv2.imshow('image',img)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()'''
+
+
