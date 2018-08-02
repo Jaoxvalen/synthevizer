@@ -1,11 +1,14 @@
 import random as ran
 import pmap as mp
+import pdataset as dset
 
 class Generator(object):
     def __init__(self):
         pass
 
-    def generate(self, projection, config, ds,path_folder, filename ,print_parameters = False):
+    def generate(self, projection, config,path_folder, filename ,print_parameters = False):
+
+        ds = dset.PDataset(config['input_file'])
 
         is_quantized = True
         if config['color_maps']['continuous']:

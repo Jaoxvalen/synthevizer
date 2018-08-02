@@ -1,8 +1,8 @@
 {
+    "output_folder":"data_gen/",
     "tasks":[
         {
             "input_file":"assets/eeuu_countries.dat",
-            "output_folder":"data_gen/",
             "number_per_proj":10,
             "projections":["eqdc","moll","merc"],
             "color_maps":{

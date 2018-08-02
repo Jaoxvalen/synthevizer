@@ -18,6 +18,7 @@ class PConfig(object):
         
         assert ('tasks' in config), "The config file must be start with 'tasks'"
         self.tasks = config['tasks']
+        self.output_folder = config['output_folder']
 
     def __validate(self):
         #todo: to validate the others values

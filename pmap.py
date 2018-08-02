@@ -3,17 +3,8 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.basemap import Basemap
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import numpy as np
+import pbbox as pbbox
 
-
-class Pbbox(object):
-
-    def __init__(self, x0, y0, x1, y1, text, typeb):
-        self.x0 = x0
-        self.y0 = y0
-        self.x1 = x1
-        self.y1 = y1
-        self.text = text
-        self.typeb = typeb
 
 
 class PMap(object):
@@ -154,42 +145,42 @@ class PMap(object):
         for l in lspara:
             if len(l[1]) > 0:
                 o = l[1][0].get_window_extent()
-                obbox = Pbbox(o.x0, size[1]-o.y0, o.x1, size[1]-o.y1, l[1][0].get_text(), 'lat_label')
+                obbox = pbbox.Pbbox(o.x0, size[1]-o.y0, o.x1, size[1]-o.y1, l[1][0].get_text(), 'lat_label')
                 lsbbox.append(obbox)
 
         for l in lsmeri:
             if len(l[1]) > 0:
                 o = l[1][0].get_window_extent()
-                obbox = Pbbox(o.x0, size[1]-o.y0, o.x1, size[1]-o.y1, l[1][0].get_text(), 'lon_label')
+                obbox = pbbox.Pbbox(o.x0, size[1]-o.y0, o.x1, size[1]-o.y1, l[1][0].get_text(), 'lon_label')
                 lsbbox.append(obbox)
 
         for l in self.cbar.ax.get_yticklabels():
             o = l.get_window_extent()
-            obbox = Pbbox(o.x0, size[1]-o.y0, o.x1, size[1]-o.y1, l.get_text(), 'legend_tick_label')
+            obbox = pbbox.Pbbox(o.x0, size[1]-o.y0, o.x1, size[1]-o.y1, l.get_text(), 'legend_tick_label')
             lsbbox.append(obbox)
         
         for l in self.cbar.ax.get_xticklabels():
             o = l.get_window_extent()
-            obbox = Pbbox(o.x0, size[1]-o.y0, o.x1, size[1]-o.y1, l.get_text(), 'legend_tick_label')
+            obbox = pbbox.Pbbox(o.x0, size[1]-o.y0, o.x1, size[1]-o.y1, l.get_text(), 'legend_tick_label')
             lsbbox.append(obbox)
 
         #color bar legend
         o = self.cbar.ax.get_window_extent()
-        obbox = Pbbox(o.x0, size[1]-o.y0, o.x1, size[1]-o.y1, '', 'legend')
+        obbox = pbbox.Pbbox(o.x0, size[1]-o.y0, o.x1, size[1]-o.y1, '', 'legend')
         lsbbox.append(obbox)
 
         llabel = self.cbar.ax.yaxis.get_label()
 
         if len(llabel.get_text())>0:
             o = llabel.get_window_extent()
-            obbox = Pbbox(o.x0, size[1]-o.y0, o.x1, size[1]-o.y1, llabel.get_text(), 'legend_label')
+            obbox = pbbox.Pbbox(o.x0, size[1]-o.y0, o.x1, size[1]-o.y1, llabel.get_text(), 'legend_label')
             lsbbox.append(obbox)
  
         llabel = self.cbar.ax.xaxis.get_label()
 
         if len(llabel.get_text())>0:
             o = llabel.get_window_extent()
-            obbox = Pbbox(o.x0, size[1]-o.y0, o.x1, size[1]-o.y1, llabel.get_text(), 'legend_label')
+            obbox = pbbox.Pbbox(o.x0, size[1]-o.y0, o.x1, size[1]-o.y1, llabel.get_text(), 'legend_label')
             lsbbox.append(obbox)
 
         
@@ -211,17 +202,7 @@ class PMap(object):
         fout.writelines(']}')
         fout.close()
 
-        '''
-        import cv2
-        
-        img = cv2.imread('myfig.png',cv2.IMREAD_COLOR)
-
-        for bbox in lsbbox:
-            print(bbox.x0, ",", bbox.y0, bbox.x1, ",", bbox.y1, "  ", bbox.typeb, "  ", bbox.text)
-            cv2.rectangle(img, (int(bbox.x0), int(bbox.y0) ), ( int(bbox.x1) , int(bbox.y1) ), (0,0,255), 1)
-        
-        cv2.imshow('image',img)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()'''
-
-
+        #plt.gcf().clear()
+        plt.clf()
+        plt.cla()
+        plt.close()
