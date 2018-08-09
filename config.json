@@ -2,9 +2,9 @@
     "output_folder":"data_gen/",
     "tasks":[
         {
-            "input_file":"assets/eeuu_countries.dat",
+            "input_file":"assets/world_land.dat",
             "number_per_proj":10,
-            "projections":["eqdc","moll","merc"],
+            "projections":["merc","eqdc","moll"],
             "color_maps":{
                 "palette":["jet","gray","viridis","cubehelix","RdBu","Blues","binary"],
                 "positions":["left","right","top","bottom"],
@@ -26,21 +26,21 @@
                 "n_tick_lat":6,
                 "n_tick_lon":8,
                 "llcrnrlat":{
-                    "min":20,
-                    "max":25
+                    "min":-80,
+                    "max":-10
                 },
                 "llcrnrlon":
                 {
-                    "min":-130,
-                    "max":-125
+                    "min":-170,
+                    "max":-10
                 },
                 "urcrnrlat":{
-                    "min":45,
-                    "max":50
+                    "min":10,
+                    "max":80
                 },
                 "urcrnrlon":{
-                    "min":-60,
-                    "max":-55
+                    "min":10,
+                    "max":170
                 },
                 "lat_ts":20,
                 "resolution":"i"

@@ -6,9 +6,9 @@ class Generator(object):
     def __init__(self):
         pass
 
-    def generate(self, projection, config,path_folder, filename ,print_parameters = False):
+    def generate(self, ds, projection, config,path_folder, filename ,print_parameters = False):
 
-        ds = dset.PDataset(config['input_file'])
+        #ds = dset.PDataset(config['input_file'])
 
         is_quantized = True
         if config['color_maps']['continuous']:
@@ -77,7 +77,7 @@ class Generator(object):
         lat_ts = config['basemap']['lat_ts']
         resolution = config['basemap']['resolution']
 
-        draw_coast_lines = (ran.randint(0, 1) == 1)
+        draw_coast_lines = True #(ran.randint(0, 1) == 1)
         draw_countries = (ran.randint(0, 1) == 1)
         draw_states = (ran.randint(0, 1) == 1)
 

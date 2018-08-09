@@ -26,6 +26,7 @@ class PDataset(object):
         self.minLon = _MAX
         self.maxLon = _MIN
         self.__get_lat_log(pathfile)
+        #self.__get_lat_lon_world()
 
     def __get_lat_log(self, pathfile):
 
@@ -48,12 +49,15 @@ class PDataset(object):
             self.maxLon = max(val_lon, self.maxLon)
         
         f.close()
+
     
     def __reset_lu(self):
         self.lower = _MAX
         self.upper = _MIN
 
     def gen_noise_values(self):
+
+        self.temp=[]
 
         seed = random.randint(1,255)
         freq = random.randint(10,30)

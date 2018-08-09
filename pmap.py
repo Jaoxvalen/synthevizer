@@ -4,7 +4,7 @@ from mpl_toolkits.basemap import Basemap
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import numpy as np
 import pbbox as pbbox
-
+from tqdm import tqdm
 
 
 class PMap(object):
@@ -94,6 +94,19 @@ class PMap(object):
             meridians, labels=[True, False, False, True])
 
         x, y = self.basemap(self.data.lons, self.data.lats)
+
+        #xr, yr = [],[]
+
+
+        #filter land
+        # print('checking land...')
+        # for i in  tqdm( range(len(x)) ):
+        #     if self.basemap.is_land(x[i],y[i]):
+        #         xr.append(x)
+        #         yr.append(y)
+
+        # print('finish check')
+
 
         sc = plt.scatter(x, y, c=self.data.temp, vmin=self.data.lower,
                          vmax=self.data.upper, cmap=self.color_map, s=20, edgecolors='none')
