@@ -6,7 +6,7 @@ def gen_world_coords(fileoutput):
     maxLon = 180.0
     minLat = -85.0
     maxLat = 85.0
-    step = 0.5
+    step = 10
 
     lon = minLon
     lat = minLat
@@ -55,4 +55,4 @@ def extract(filename, fileoutput):
 
 #extract('../assets/weather_forecasts_EU.dat', '../assets/eeuu_countries.dat')
 
-gen_world_coords('../assets/world_land.dat')
+gen_world_coords('../assets/world_land_10.dat')

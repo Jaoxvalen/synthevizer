@@ -1,6 +1,7 @@
 import random as ran
 import pmap as mp
 import pdataset as dset
+import lorem
 
 class Generator(object):
     def __init__(self):
@@ -81,6 +82,13 @@ class Generator(object):
         draw_countries = (ran.randint(0, 1) == 1)
         draw_states = (ran.randint(0, 1) == 1)
 
+        parallels_orientation = ran.choice(['left','right'])
+        meridians_orientation = ran.choice(['down','up'])
+
+        color_map_label = lorem.sentence().split(' ')[0]
+        title = lorem.sentence()
+
+
         if print_parameters:
             print('projection', projection)
             print('color_map', color_map)
@@ -104,6 +112,10 @@ class Generator(object):
             print('color_map_shrink', color_map_shrink)
             print('color_map_orientation', color_map_orientation)
             print('color_map_thickness', color_map_thickness)
+            print('parallels_orientation',parallels_orientation)
+            print('meridians_orientation',meridians_orientation)
+            print('color_map_label',color_map_label)
+            print('title',title)
 
 
         oMap = mp.PMap(ds, projection, color_map, llcrnrlat,
@@ -122,8 +134,10 @@ class Generator(object):
                     _color_map_pos=color_map_pos, 
                     _color_map_cax = color_map_cax, 
                     _color_map_shrink= color_map_shrink, 
-                    _color_map_orientation = color_map_orientation, 
-                    _color_map_thickness = color_map_thickness, _color_map_label = 'value')
+                    _color_map_orientation = color_map_orientation,
+                    _parallels_orientation = parallels_orientation,
+                    _meridians_orientation = meridians_orientation,
+                    _color_map_thickness = color_map_thickness, _color_map_label = color_map_label, _title= title)
         
         oMap.create()
         oMap.save_fig_bboxes(path_folder,filename)

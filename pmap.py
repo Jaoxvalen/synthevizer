@@ -5,6 +5,8 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 import numpy as np
 import pbbox as pbbox
 from tqdm import tqdm
+from matplotlib.mlab import griddata
+import random as ran
 
 
 class PMap(object):
@@ -18,7 +20,7 @@ class PMap(object):
                  _ocean_color='white',
                  _land_color='white',
                  _color_map_pos='right', _color_map_cax=False, _color_map_shrink=0.5, _color_map_orientation='vertical',
-                 _color_map_thickness='5%', _color_map_label='value'):
+                 _color_map_thickness='5%', _color_map_label='value', _parallels_orientation='left', _meridians_orientation = 'down', _title='this is the great title'):
 
         self.projection = _projection
         self.llcrnrlat = _llcrnrlat
@@ -45,6 +47,11 @@ class PMap(object):
         self.background = _background
         self.land_color = _land_color
         self.ocean_color = _ocean_color
+        self.parallels_orientation=_parallels_orientation
+        self.meridians_orientation = _meridians_orientation
+        self.title = _title
+
+        
 
         if _n_quantized != 0:
             self.color_map = plt.cm.get_cmap(_color_map, _n_quantized)
@@ -56,8 +63,8 @@ class PMap(object):
         mpl.rcParams.update({'font.size': 8})
 
         if self.projection == 'moll':
-            step_tick_lat = 30.0
-            step_tick_lon = 60.0
+            step_tick_lat = 30.0 + ran.randint(-10, 10)
+            step_tick_lon = 60.0 + ran.randint(-10, 10)
 
         else:
             step_tick_lat = int(
@@ -88,10 +95,21 @@ class PMap(object):
         parallels = np.arange(-90., 91., step_tick_lat)
         meridians = np.arange(-180., 181., step_tick_lon)
 
+        if self.parallels_orientation == 'left':
+            labesl_par = [True, False, False, True] 
+        elif self.parallels_orientation == 'right':
+            labesl_par = [False, True, False, True] 
+
+        
+        if self.meridians_orientation == 'down':
+            labesl_mer = [True, False, False, True] 
+        elif self.meridians_orientation == 'up':
+            labesl_mer = [True, False, True, False] 
+
         self.fig_parallels = self.basemap.drawparallels(
-            parallels, labels=[True, False, False, True])
+            parallels, labels=labesl_par)
         self.fig_meridians = self.basemap.drawmeridians(
-            meridians, labels=[True, False, False, True])
+            meridians, labels=labesl_mer)
 
         x, y = self.basemap(self.data.lons, self.data.lats)
 
@@ -111,6 +129,15 @@ class PMap(object):
         sc = plt.scatter(x, y, c=self.data.temp, vmin=self.data.lower,
                          vmax=self.data.upper, cmap=self.color_map, s=20, edgecolors='none')
 
+
+        
+        #plt.title(lorem.sentence())
+        ttl = plt.title(self.title)
+        ttl.set_position([.5, 1.5])
+
+        from matplotlib import rcParams
+        rcParams['axes.titlepad'] = 25 
+
         if self.color_map_cax:
 
             if self.color_map_pos == 'top':
@@ -118,10 +145,10 @@ class PMap(object):
                 pad = '30%'
             elif self.color_map_pos == 'bottom':
                 orientation = 'horizontal'
-                pad = '10%'
+                pad = '30%'
             elif self.color_map_pos == 'right':
                 orientation = 'vertical'
-                pad = '15%'
+                pad = '30%'
             elif self.color_map_pos == 'left':
                 orientation = 'vertical'
                 pad = '30%'
@@ -140,8 +167,26 @@ class PMap(object):
         cbar.set_label(self.color_map_label)
 
         self.cbar = cbar
+
+       
+        
         
 
+    def get_signed(self, str_val):
+
+        s = str_val[-1:]
+        n = str_val[:-2]
+        
+        try:
+            if s == 'S' or s =='W':
+                return float(n)*-1
+            elif s=='E' or s == 'N':
+                return float(n)
+            else:
+                return 0
+        except ValueError:
+            return 0
+        
     #save the figure and bboxes
     def save_fig_bboxes(self, pathfile, name_fig):
 
@@ -158,13 +203,15 @@ class PMap(object):
         for l in lspara:
             if len(l[1]) > 0:
                 o = l[1][0].get_window_extent()
-                obbox = pbbox.Pbbox(o.x0, size[1]-o.y0, o.x1, size[1]-o.y1, l[1][0].get_text(), 'lat_label')
+                
+
+                obbox = pbbox.Pbbox(o.x0, size[1]-o.y0, o.x1, size[1]-o.y1, l[1][0].get_text(), 'lat_label', self.get_signed(l[1][0].get_text()) )
                 lsbbox.append(obbox)
 
         for l in lsmeri:
             if len(l[1]) > 0:
                 o = l[1][0].get_window_extent()
-                obbox = pbbox.Pbbox(o.x0, size[1]-o.y0, o.x1, size[1]-o.y1, l[1][0].get_text(), 'lon_label')
+                obbox = pbbox.Pbbox(o.x0, size[1]-o.y0, o.x1, size[1]-o.y1, l[1][0].get_text(), 'lon_label', self.get_signed(l[1][0].get_text()))
                 lsbbox.append(obbox)
 
         for l in self.cbar.ax.get_yticklabels():
@@ -207,9 +254,9 @@ class PMap(object):
         fout.writelines('{"bboxes":[')
         for bbox in  lsbbox:
             if i == len(lsbbox)-1:
-                fout.writelines('{"type":"'+bbox.typeb+'","text":"'+bbox.text+'","x0":'+str(bbox.x0)+',"y0":'+str(bbox.y0)+',"x1":'+str(bbox.x1)+',"y1":'+str(bbox.y1) +'}\n')
+                fout.writelines('{"type":"'+bbox.typeb+'","text":"'+bbox.text+'", "val":'+ str(bbox.signed_val) +',"x0":'+str(bbox.x0)+',"y0":'+str(bbox.y0)+',"x1":'+str(bbox.x1)+',"y1":'+str(bbox.y1) +'}\n')
             else:
-                fout.writelines('{"type":"'+bbox.typeb+'","text":"'+bbox.text+'","x0":'+str(bbox.x0)+',"y0":'+str(bbox.y0)+',"x1":'+str(bbox.x1)+',"y1":'+str(bbox.y1) +'},\n')
+                fout.writelines('{"type":"'+bbox.typeb+'","text":"'+bbox.text+'", "val":'+ str(bbox.signed_val) +',"x0":'+str(bbox.x0)+',"y0":'+str(bbox.y0)+',"x1":'+str(bbox.x1)+',"y1":'+str(bbox.y1) +'},\n')
             i+=1
 
         fout.writelines(']}')
